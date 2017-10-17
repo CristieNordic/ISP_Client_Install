@@ -107,26 +107,25 @@ Function Install-ISPClient {
 
         # Future we need to create a for loop here instead to check if files even exist
         # $vcredistPath = @("{270b0954-35ca-4324-bbc6-ba5db9072dad}", "{BF2F04CD-3D1F-444e-8960-D08EBD285C3F}")
-        $job1 = "$ISPInstallPath\ISSetupPrerequisites\{270b0954-35ca-4324-bbc6-ba5db9072dad}\$vcredistX86 /install /norestart /log $vcredistX86.log"
-        $job2 = "$ISPInstallPath\ISSetupPrerequisites\{BF2F04CD-3D1F-444e-8960-D08EBD285C3F}\$vcredistX86 /install /norestart /log $vcredistX86.log"
-        $job3 = "$ISPInstallPath\ISSetupPrerequisites\{7f66a156-bc3b-479d-9703-65db354235cc}\$vcredistX64 /install /norestart /log $vcredistX64.log"
-        $job4 = "$ISPInstallPath\ISSetupPrerequisites\{3A3AF437-A9CD-472f-9BC9-8EEDD7505A02}\$vcredistX64 /install /norestart /log $vcredistX64.log"
+        $job1 = "$ISPInstallPath\ISSetupPrerequisites\{270b0954-35ca-4324-bbc6-ba5db9072dad}\$vcredistX86"
+        $job2 = "$ISPInstallPath\ISSetupPrerequisites\{BF2F04CD-3D1F-444e-8960-D08EBD285C3F}\$vcredistX86"
+        $job3 = "$ISPInstallPath\ISSetupPrerequisites\{7f66a156-bc3b-479d-9703-65db354235cc}\$vcredistX64"
+        $job4 = "$ISPInstallPath\ISSetupPrerequisites\{3A3AF437-A9CD-472f-9BC9-8EEDD7505A02}\$vcredistX64"
+        $jobarg = "/install /quiet /norestart /log vcredist.log"
 
-        Start-Process $job1 -NoNewWindow -Wait
-        Start-Process $job2 -NoNewWindow -Wait
-        Start-Process $job3 -NoNewWindow -Wait
-        Start-Process $job4 -NoNewWindow -Wait
-
-        #Start-Process $ISPInstallPath\ISSetupPrerequisites\{270b0954-35ca-4324-bbc6-ba5db9072dad}\$vcredistX86 /install /norestart /log $vcredistX86.log -NoNewWindow -Wait
-        #Start-Process $ISPInstallPath\ISSetupPrerequisites\{BF2F04CD-3D1F-444e-8960-D08EBD285C3F}\$vcredistX86 /install /norestart /log $vcredistX86.log -NoNewWindow -Wait
-        #Start-Process $ISPInstallPath\ISSetupPrerequisites\{7f66a156-bc3b-479d-9703-65db354235cc}\$vcredistX64 /install /norestart /log $vcredistX64.log -NoNewWindow -Wait
-        #Start-Process $ISPInstallPath\ISSetupPrerequisites\{3A3AF437-A9CD-472f-9BC9-8EEDD7505A02}\$vcredistX64 /install /norestart /log $vcredistX64.log -NoNewWindow -Wait
+        Start-Process $job1 $jobarg -Wait
+        Start-Process $job2 $jobarg -Wait
+        Start-Process $job3 $jobarg -Wait
+        Start-Process $job4 $jobarg -Wait
 
         echo "Installing $ISP $BAC"
         echo "Please Wait ..."
         echo ""
 
-        Start-Process msiexec /i $ISPInstallPath\$ISPInstallFile RebootYesNo="No" REBOOT="Suppress" ALLUSERS=1 ADDLOCAL="BackupArchiveGUI,BackupArchiveWeb,Api64Runtime" TRANSFORMS=1033.mst /qn /l*v "c:\log.txt" -NoNewWindow -Wait
+        $job1 = "msiexec"
+        $jobarg = '/i $ISPInstallPath\$ISPInstallFile RebootYesNo="No" REBOOT="Suppress" ALLUSERS=1 ADDLOCAL="BackupArchiveGUI,BackupArchiveWeb,Api64Runtime" TRANSFORMS=1033.mst /qn /l*v "c:\log.txt"'
+
+        Start-Process $job1 $jobarg -Wait
 
     }
 }
