@@ -1,9 +1,9 @@
-########################
-## Configuration Area ##
-########################
 
-$ISPInstallPath = "C:\Temp\TSM\BAClient"
-$ISPInstallFile = "setup.txt"
+Function Get-InstallConfig {
+    $ISPInstallPath = "C:\Temp\TSM\BAClient"
+    $ISPInstallFile = "setup.txt"
+    $ISPDefaultDsmFile = "dsm.opt"
+}
 
 
 Function Get-DefaultVariables {
@@ -51,6 +51,7 @@ Function Get-ISPInstallPath {
     else {
         echo "Found $ISP Backup-Archive Client Installer"
         echo "Found the installations files under directory $ISPInstallPath"
+        if (test-path -path "$ISPInstallPath"
     }
     echo ""
     echo ""
