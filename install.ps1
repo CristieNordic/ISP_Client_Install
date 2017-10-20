@@ -111,22 +111,34 @@ Function Install-ISPClient {
         $job2 = "$ISPInstallPath\ISSetupPrerequisites\{BF2F04CD-3D1F-444e-8960-D08EBD285C3F}\$vcredistX86"
         $job3 = "$ISPInstallPath\ISSetupPrerequisites\{7f66a156-bc3b-479d-9703-65db354235cc}\$vcredistX64"
         $job4 = "$ISPInstallPath\ISSetupPrerequisites\{3A3AF437-A9CD-472f-9BC9-8EEDD7505A02}\$vcredistX64"
-        $jobarg = "/install /quiet /norestart /log vcredist.log"
+        $Arguments = "/install /quiet /norestart /log vcredist.log"
 
-        Start-Process $job1 $jobarg -Wait
-        Start-Process $job2 $jobarg -Wait
-        Start-Process $job3 $jobarg -Wait
-        Start-Process $job4 $jobarg -Wait
+        Start-Process $job1 -Argumentlist $Arguments -Wait
+        Start-Process $job2 -Argumentlist $Arguments -Wait
+        Start-Process $job3 -Argumentlist $Arguments -Wait
+        Start-Process $job4 -Argumentlist $Arguments -Wait
 
         echo "Installing $ISP $BAC"
         echo "Please Wait ..."
         echo ""
-
-        $job1 = "msiexec"
-        $jobarg = '/i $ISPInstallPath\$ISPInstallFile RebootYesNo="No" REBOOT="Suppress" ALLUSERS=1 ADDLOCAL="BackupArchiveGUI,BackupArchiveWeb,Api64Runtime" TRANSFORMS=1033.mst /qn /l*v "c:\log.txt"'
-
-        Start-Process $job1 $jobarg -Wait
-
+        $DataStamp = Get-Date -Format yyyyMMDDTHHmmss
+        @ISPShortName = "isp-ba-client
+        $logFile = '{0}-{1}.log' -f $ISPShortFile,$DataStamp               
+        $MSIArguments = @(
+            "/i"
+            ('"{0}"' -f $ISPInstallFile)
+            'RebootYesNo="No"'
+            'REBOOT="Suppress"'
+            "ALLUSERS=1"
+            'ADDLOCAL="BackupArchiveGUI,BackupArchiveWeb,Api64Runtime"'
+            "TRANSFORMS=1033.mst"
+            "/qn"
+            "/l*v"
+            $logFile
+        )
+        echo "$MSIArguments"
+        cd $ISPInstallPath
+        Start-Process -FilePath "msiexec.exe" -ArgumentList "$MSIArguments" -Wait
     }
 }
 
