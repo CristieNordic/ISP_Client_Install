@@ -9,8 +9,6 @@ Function Get-InstallConfig {
     echo ""
     echo ""
 
-    $ISPScriptVersion = "1.0"
-
     ####### Installations Files #######
     $Global:BaInstPath = ".\TSMClient"
     $Global:BaInstallFile = "IBM Spectrum Protect Client.msi"
@@ -31,10 +29,10 @@ Function Get-InstallConfig {
     $Global:BaCad = "TSM Client Acceptor"
     $Global:BaSched = "TSM Client Scheduler"
     $Global:BaRemote = "TSM Client Remote Agent"
-    $Global:ExchCad = "TSM Exchange Acceptor"
-    $Global:ExchSched = "TSM Exchange Scheduler"
-    $Global:SqlCad = "TSM SQL Acceptor"
-    $Global:SqlSched = "TSM SQL Scheduler"
+    #$Global:ExchCad = "TSM Exchange Acceptor"
+    #$Global:ExchSched = "TSM Exchange Scheduler"
+    #$Global:SqlCad = "TSM SQL Acceptor"
+    #$Global:SqlSched = "TSM SQL Scheduler"
 
     ####### Downloads URLs  #######
     $Global:BaClientDownloadUrl = "ftp://ftp.software.ibm.com/storage/tivoli-storage-management/maintenance/client/v8r1/Windows/x64/v812/8.1.2.0-TIV-TSMBAC-WinX64.exe"
@@ -94,6 +92,7 @@ Function Get-BaClientExist {
 
     $ISPClientExistVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient" -Name PtfLevel).PtfLevel
     if (test-path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient") {
+        echo " "
         echo "You have already a $ISP Client Installed version: $ISPClientExistVersion"
         echo "Please uninstall the $ISP Client before continue"
         $Global:BaClientExist = $True
@@ -104,10 +103,9 @@ Function Get-BaClientExist {
     }
     else {
         echo ""
-        echo "####################################"
-        echo ""
-        echo "$ISP $BAC is not installed, we will automatic install it for you..."
         echo "Please wait..."
+        echo ""
+        echo "$ISP $BAC will be install..."
         $Global:BaClientExist = $False
 
     }
@@ -119,11 +117,14 @@ Function Get-BaInstallPath {
     echo "Check if you the path to $ISP $BAC Installation Files exist"
 
     if (-not (test-path -path "$BaInstPath\$BaInstFile")) {
-        echo "************************************ ERROR "************************************"
-        echo "Can't find the installations files for $ISP $BAC in $BaInstPath"
-        echo "We will automatic start downloading the $ISP $BAC for you..."
+        echo " "
+        echo "Future release will we automatic download the installation client for you..."
+
         $Global:BaInstFiles = $False
-        $Global:Download = $BaClientDownloadUrl
+        #$Global:Download = $BaClientDownloadUrl
+        $Global:ExitErrorMsg = "Can't find the installations files for $ISP $BAC in $BaInstPath"
+        $Global:ExitCode = "CRI9999E"
+        Exit-Error
     }
 
     else {
@@ -142,7 +143,7 @@ Function Get-BaInstallPath {
 }
 
 Function Install-BaClient {
-    if ($ISPBAClientExist -eq $False) {
+    if ($BaClientExist -eq $False) {
         echo "Installing Microsoft Windows 64-Bit C++ Runtime"
         echo "Please Wait ..."
         echo ""
@@ -187,18 +188,36 @@ Function Install-BaClient {
     }
 }
 
+Function Register-Node {
+    echo " "
+    echo " "
+    $msg = "Please view the information on your PowerShell screen"
+    Invoke-WmiMethod -Path Win32_Process -Name Create -ArgumentList "msg * $msg"
+    echo "*****************************************************************"
+    echo "***************** Please run following commands *****************"
+    echo "*****************       or run the WebUI        *****************"
+    echo "*****************************************************************"
+    echo " "
+    echo "To register the node in IBM Spectrum Protect Server"
+    echo "TSM> Register node $NodeName $NodePassword domain=<DOMAIN NAME>"
+    pause
+    echo " "
+    echo "Please assign the node to a Scheduler before continue"
+    echo "TSM> define association <DOMAIN NAME> <SCHEDULE NAME> $nodename "
+    pause
+}
+
 Function Config-BAClient {
     $BaClientInstallPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion" -Name TSMClientPath).TSMClientPath
-    Copy-Item $DsmPat\BaDsmFile "$BaClientInstallPath\baclient"
+    Copy-Item $DsmPath\BaDsmFile "$BaClientInstallPath\baclient\dsm.opt"
     cd /d "$BaClientInstallPath\baclient"
 
-dsmcutil install scheduler /name:"NEW_SCHEDULE_NAME" /node:yournode /password:xxxxx /startnow:no
-dsmcutil install cad /node:yournode /password:xxxxx /autostart:yes /startnow:no
     echo "Creating $BaSched Service"
     $Argument = @(
             "install"
             "Scheduler"
             '/name:"$BaSched"'
+            '/optfile:"$BaClientInstallPath\baclient\dsm.opt"'
             "/node:$NodeName"
             "/password:$NodePassword"
             "/autostart:no"
@@ -212,17 +231,34 @@ dsmcutil install cad /node:yournode /password:xxxxx /autostart:yes /startnow:no
             "install"
             "CAD"
             '/name:"$BaCad"'
+            '/optfile:"$BaClientInstallPath\baclient\dsm.opt"'
             "/node:$NodeName"
             "/password:$NodePassword"
+            "/validate:yes"
             "/autostart:yes"
             "/startnow:no"
+            '/CadSchadName:"$BaSched"'
     )
 
     echo "$Argument"
     Start-Process -FilePath "dsmcutil.exe" -ArgumentList "Argument" -Wait
 
-    echo "Creating $BaCad Service"
-    Skapa tjänsten "TSM Client Remote Acceptor"
+    echo "Creating $BaRemote Service"
+    $Argument = @(
+            "install"
+            "remoteagent"
+            '/name:"$BaRemote"'
+            '/optfile:"$BaClientInstallPath\baclient\dsm.opt"'
+            "/node:$NodeName"
+            "/password:$NodePassword"
+            "/validate:yes"
+            "/autostart:no"
+            "/startnow:no"
+            '/partnername:"$BaCad"'
+    )
+
+    echo "$Argument"
+    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "Argument" -Wait
 
     ### Go Back to Installation Path
     cd /d $PSCommandPath
@@ -234,7 +270,18 @@ dsmcutil install cad /node:yournode /password:xxxxx /autostart:yes /startnow:no
 
 ########################################## GENERIC FUNCTIONS ##########################################
 function Exit-Error {
+    echo " "
+    echo " "
+    echo "*******************************************************************************"
+    echo "************************************ ERROR ************************************"
+    echo "*******************************************************************************"
+    echo " "
     echo "$ExitCode - $ExitErrorMsg"
+    echo " "
+    echo "*******************************************************************************"
+    echo "************************************ ERROR ************************************"
+    echo "*******************************************************************************"
+    pause
     exit $ExitCode
 }
 
@@ -252,20 +299,24 @@ Get-InstallConfig
 Get-OSVersion
 Get-BaClientExist
 Get-BaInstallPath
+
+if ($ISPContinue -eq "$True") { Install-BaClient }
+if ($ISPContinue -eq "$True") { Register-Node }
+if ($ISPContinue -eq "$True") { Config-BaClient }
+
+### Future Stuff ###
+#Get-ExchangeExist
 # if ($BaInstFiles -eq "$False") {Download-Client } # Future Function will now execute
 
-#Get-ExchangeExist
 #if ($ExchExist -eq "True") { Get-Dp4ExchInst } #Future Function will return True
 #if ($ExchInstExist -eq "False")
-
-
-
-
-
-echo "$ISPContinue"
-if ($ISPContinue -eq "$True") { Install-ISPClient }
 #if ($ExchExist -eq "True") { Install-Dp4Exchange }
 #if ($ExchExist -eq "True") { Config-Dp4Exchange }
 
 
 # Get-ExchangeExist
+
+
+
+
+
