@@ -13,19 +13,19 @@ Function Get-InstallConfig {
 
     ####### Installations Files #######
     $Global:BaInstPath = ".\TSMClient"
-    $Global:ISPInstallFile = "IBM Spectrum Protect Client.msi"
+    $Global:BaInstallFile = "IBM Spectrum Protect Client.msi"
 
-    $Globel:ExchInstPath = ".\DPforExch"
-    $Globel:ExchInstFile = "DP for Exchange.msi"
+    #$Globel:ExchInstPath = ".\DPforExch"
+    #$Globel:ExchInstFile = "DP for Exchange.msi"
 
-    $Globel:SqlInstPath = ".\DPforSql"
-    $Globel:SqlInstFile = "DP for SQL.msi"
+    #$Globel:SqlInstPath = ".\DPforSql"
+    #$Globel:SqlInstFile = "DP for SQL.msi"
 
     ####### DSM.OPT File Information #######
     $Global:DsmPath = ".\config"
     $Global:BaDsmFile = "ba_dsm.opt"
-    $Global:SqlDsmFile = "sql_dsm.opt"
-    $Global:ExchDsmFile = "exch_dsm.opt"
+    #$Global:SqlDsmFile = "sql_dsm.opt"
+    #$Global:ExchDsmFile = "exch_dsm.opt"
 
     ####### Windows Services Names  #######
     $Global:BaCad = "TSM Client Acceptor"
@@ -115,10 +115,11 @@ Function Get-BaClientExist {
     echo ""
 }
 
-Function Get-BaInstPath {
+Function Get-BaInstallPath {
     echo "Check if you the path to $ISP $BAC Installation Files exist"
 
     if (-not (test-path -path "$BaInstPath\$BaInstFile")) {
+        echo "************************************ ERROR "************************************"
         echo "Can't find the installations files for $ISP $BAC in $BaInstPath"
         echo "We will automatic start downloading the $ISP $BAC for you..."
         $Global:BaInstFiles = $False
@@ -165,11 +166,11 @@ Function Install-BaClient {
         echo "Please Wait ..."
         echo ""
         $DataStamp = Get-Date -Format yyyyMMDDTHHmmss
-        @ISPShortName = "isp-ba-client
-        $logFile = '{0}-{1}.log' -f $ISPShortFile,$DataStamp               
+        $ISPShortName = "isp-ba-client"
+        $logFile = '{0}-{1}.log' -f $ISPShortFile,$DataStamp
         $MSIArguments = @(
-            "/i"
-            ('"{0}"' -f $ISPInstallFile)
+            '/i'
+            ('"{0}"' -f $BaInstallFile)
             'RebootYesNo="No"'
             'REBOOT="Suppress"'
             "ALLUSERS=1"
