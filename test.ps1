@@ -1,0 +1,1 @@
+ Get-Content ".\settings.cfg" | Select-String Username |
