@@ -9,6 +9,11 @@ Function Get-InstallConfig {
     echo ""
     echo ""
 
+    ####### IBM Spectrum Protect Server Settings #######
+    $Global:TcpServerAddressDefault = "tsm2.cristie.se"
+    $Global:TcpPortDefault = "1500"
+    $Global:NodePassword = "tsm123"
+
     ####### Installations Files #######
     $Global:BaInstPath = ".\TSMClient"
     $Global:BaInstallFile = "IBM Spectrum Protect Client.msi"
@@ -46,19 +51,17 @@ Function Get-InstallConfig {
     $Global:EXCH = "Microsoft Exchange Server"
     $Global:SQL = "Microsoft SQL Server"
 
-    $Global:ISPContinue = $True
     echo "Welcome to Cristie Silent Installation Script $ISPScriptVersion for $ISP $BAC"
 }
 
-Function Get-OSVersion {
+Function Get-OSInformation {
     echo "Check what version of Operating Systems you are running..."
-    echo "Please Wait..."
 
     $Global:osversion = (Get-WmiObject -class Win32_OperatingSystem).Caption
     $Global:true64bit = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
-    $Global:nodename = (Get-WmiObject Win32_OperatingSystem).CSName
+    $Global:NodeNameDefault = (Get-WmiObject Win32_OperatingSystem).CSName
 
-    echo "You are running version: $osversion on $true64bit"
+    echo "Your Server $NodeNameDefault are running version: $osversion on $true64bit"
     echo ""
     echo ""
 
@@ -66,56 +69,67 @@ Function Get-OSVersion {
         $Global:ExitErrorMsg = "Can't find the Operating System Version"
         $Global:ExitCode = "CRI0003E"
         Exit-Error
-    }
+        }
 
     if (-not ($true64bit -eq "64-Bit")) {
-        $Global:ISPContinue = $False
         $Global:ExitErrorMsg = "This script is not supporting 32-Bits Operating Systems"
         $Global:ExitCode = "CRI0002E"
         Exit-Error
-    }
+        }
 
-    if (-not ($nodename)) {
+    if (-not ($NodeNameDefault)) {
         $Global:ExitErroMsg = "Can't find the hostname of this client"
         $Global:ExitCode = "CRI0001E"
         Exit-Error
-
-    }
-
+        }
 }
 
 ########################################## IBM SPECTRUM PROTECT BACKUP-ARCHIVE CLIENT ##########################################
+Function Set-BaSetup {
+    $Global:TcpServerAddress = Read-Host "Please enter ISP Server Address (Default: $TcpServerAddressDefault)"
+    if (!$TcpServerAddress) {
+        $Global:TcpServerAddress = $TcpServerAddressDefault
+        }
+    $Global:TcpPort = Read-Host "Please enter ISP Server Port (Default: $TcpPortDefault)"
+    if (!$TcpPort) {
+        $Global:TcpPort = $TcpPortDefault
+        }
+    $NodeName = Read-Host "Please enter your hostname (Default: $NodeNameDefault)"
+    if (!$NodeName) {
+        $Global:NodeName = $NodeNameDefault
+        }
+    $Global:TcpClientAddress = Read-Host "Please enter your Local IP Address"
+    #$Password = Read-Host -assecurestring "Please enter your password"
+}
+
 Function Get-BaClientExist {
     echo "Check if $ISP $BAC exist"
-    echo "Please Wait..."
     echo ""
 
     $ISPClientExistVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient" -Name PtfLevel).PtfLevel
     if (test-path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient") {
         echo " "
         echo "You have already a $ISP Client Installed version: $ISPClientExistVersion"
-        echo "Please uninstall the $ISP Client before continue"
+        echo "Please uninstall the $ISP Client before continue and"
+        echo "delete the key HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient"
         $Global:BaClientExist = $True
-        $Global:ISPContinue = $False
         $Global:ExitErrorMsg = "$ISP $BAC already exist, Upgrade is not supported yet"
         $Global:ExitCode = "CRI9999E"
         Exit-Error
-    }
+        }
+
     else {
         echo ""
-        echo "Please wait..."
         echo ""
-        echo "$ISP $BAC will be install..."
+        echo "$ISP $BAC will now be installed..."
         $Global:BaClientExist = $False
+        }
 
-    }
     echo ""
     echo ""
 }
 
 Function Get-BaInstallPath {
-    echo "Check if you the path to $ISP $BAC Installation Files exist"
-
     if (-not (test-path -path "$BaInstPath\$BaInstFile")) {
         echo " "
         echo "Future release will we automatic download the installation client for you..."
@@ -128,15 +142,12 @@ Function Get-BaInstallPath {
     }
 
     else {
-        echo "Found $ISP $BAC Installer"
-        echo "Found the installations files under directory $BaInstPath"
-        $Global:ISPContinue = $True
+        echo "Found the $ISP $BAC Installations files under directory $BaInstPath"
         if (-not (test-path -path "$DsmPath\$BaDsmFile")) {
             $Global:ExitCode = "CRI0004E"
             $Global:ExitErrorMsg = "Does not found default $BaDsmFile file under directory $DsmPath"
             Exit-Error
         }
-
     }
     echo ""
     echo ""
@@ -168,7 +179,7 @@ Function Install-BaClient {
         echo ""
         $DataStamp = Get-Date -Format yyyyMMDDTHHmmss
         $ISPShortName = "isp-ba-client"
-        $logFile = '{0}-{1}.log' -f $ISPShortFile,$DataStamp
+        $logFile = '{0}-{1}.log' -f $ISPShortName,$DataStamp
         $MSIArguments = @(
             '/i'
             ('"{0}"' -f $BaInstallFile)
@@ -181,10 +192,9 @@ Function Install-BaClient {
             "/l*v"
             $logFile
         )
-        echo "$MSIArguments"
-        cd $BaInstPath
+        Set-Location $BaInstPath
         Start-Process -FilePath "msiexec.exe" -ArgumentList "$MSIArguments" -Wait
-        cd ..
+        Set-Location ..
         }
 }
 
@@ -203,81 +213,90 @@ Function Register-Node {
     pause
     echo " "
     echo "Please assign the node to a Scheduler before continue"
-    echo "TSM> define association <DOMAIN NAME> <SCHEDULE NAME> $nodename "
+    echo "TSM> define association <DOMAIN NAME> <SCHEDULE NAME> $NodeName "
     pause
 }
 
 Function Config-BAClient {
     $BaClientInstallPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion" -Name TSMClientPath).TSMClientPath
-    Copy-Item $DsmPath\BaDsmFile "$BaClientInstallPath\baclient\dsm.opt"
-    cd /d "$BaClientInstallPath\baclient"
+    $baclientdir = "$BaClientInstallPath" + "baclient"
+    $dsmopt = "$BaClientInstallPath" + "baclient\dsm.opt"
+    $errorlogname = "$BaClientInstallPath" + "baclient\dsmerror.log"
+    $schedlogname = "$BaClientInstallPath" + "baclient\dsmsched.log"
 
+    Copy-Item $DsmPath\$BaDsmFile "$dsmopt"
+    (Get-Content "$dsmopt").replace('NODENAME', "$NodeName") | Set-Content "$dsmopt"
+    (Get-Content "$dsmopt").replace('SERVERADDRESS', "$TcpServerAddress") | Set-Content "$dsmopt"
+    (Get-Content "$dsmopt").replace('LOCALIPADDRESS', "$TcpClientAddress") | Set-Content "$dsmopt"
+    (Get-Content "$dsmopt").replace('PATHTOERRORLOG', "$errorlogname") | Set-Content "$dsmopt"
+    (Get-Content "$dsmopt").replace('PATHTOSCHEDLOG', "$schedlogname") | Set-Content "$dsmopt"
+
+    Set-Location $baclientdir
+
+    $Argument1 = @(
+        "install",
+        "Scheduler",
+        "/name:""$BaSched""",
+        "/optfile:""$dsmopt""",
+        "/node:$NodeName",
+        "/password:$NodePassword",
+        "/autostart:no"
+        "/startnow:no"
+    )
+
+    $Argument2 = @(
+        "install",
+        "CAD",
+        "/name:""$BaCad""",
+        "/optfile:""$dsmopt""",
+        "/node:$NodeName",
+        "/password:$NodePassword",
+        "/validate:yes",
+        "/autostart:yes",
+        "/startnow:no",
+        "/CadSchedName:""$BaSched"""
+        )
+    $Argument3 = @(
+        "install",
+        "remoteagent"
+        "/name:""$BaRemote""",
+        "/optfile:""$dsmopt""",
+        "/node:$NodeName",
+        "/password:$NodePassword",
+        "/validate:yes",
+        "/startnow:no",
+        "/partnername:""$BaCad"""
+        )
+    get-content "$dsmopt"
     echo "Creating $BaSched Service"
-    $Argument = @(
-            "install"
-            "Scheduler"
-            '/name:"$BaSched"'
-            '/optfile:"$BaClientInstallPath\baclient\dsm.opt"'
-            "/node:$NodeName"
-            "/password:$NodePassword"
-            "/autostart:no"
-            "/startnow:no"
-            )
-
-    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument" -Wait
+    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument1" -Wait
 
     echo "Creating $BaCad Service"
-    $Argument = @(
-            "install"
-            "CAD"
-            '/name:"$BaCad"'
-            '/optfile:"$BaClientInstallPath\baclient\dsm.opt"'
-            "/node:$NodeName"
-            "/password:$NodePassword"
-            "/validate:yes"
-            "/autostart:yes"
-            "/startnow:no"
-            '/CadSchadName:"$BaSched"
-            )
-
-    echo "$Argument"
-    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument" -Wait
+    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument2" -Wait
 
     echo "Creating $BaRemote Service"
-    $Argument = @(
-            "install"
-            "remoteagent"
-            '/name:"$BaRemote"'
-            '/optfile:"$BaClientInstallPath\baclient\dsm.opt"'
-            "/node:$NodeName"
-            "/password:$NodePassword"
-            "/validate:yes"
-            "/autostart:no"
-            "/startnow:no"
-            '/partnername:"$BaCad"'
-            )
-
-    echo "$Argument"
-    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument" -Wait
+    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument3" -Wait
 
     ### Go Back to Installation Path
-    cd /d $PSCommandPath
+    Set-Location $PSCommandPath
 }
 
 Function Test-BaClient {
     $BaClientInstallPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion" -Name TSMClientPath).TSMClientPath
-    cd /d "$BaClientInstallPath\baclient"
+    $baclientdir = "$BaClientInstallPath" + "baclient"
+    Set-Location "$BaClientdir"
 
     $Argument = @(
-            "query"
+            "query",
             "filesystem"
             )
     Start-Process -FilePath "dsmc.exe" -ArgumentList "$Argument" -Wait
 
     $Argument = @(
-            "query"
+            "query",
             "schedule"
             )
+    Start-Process -FilePath "dsmc.exe" -ArgumentList "$Argument" -Wait
 }
 
 
@@ -294,6 +313,7 @@ function Exit-Error {
     echo "*******************************************************************************"
     echo "************************************ ERROR ************************************"
     echo "*******************************************************************************"
+    Set-Location $PSCommandPath
     pause
     exit $ExitCode
 }
@@ -307,9 +327,14 @@ Function Download-Client {
 ########################################## MAIN INSTALL ##########################################
 
 # Get all information before the installation start
-echo "Collecting information before installing"
+echo "*******************************************************************************"
+echo "*******************     Welcome To IBM Spectrum Protect     *******************"
+echo "*******************           Installation Script           *******************"
+echo "******************* OpenSource Project by Cristie Nordic AB *******************"
+echo "*******************************************************************************"
 Get-InstallConfig
-Get-OSVersion
+Get-OSInformation
+Set-BaSetup
 Get-BaClientExist
 Get-BaInstallPath
 
@@ -329,8 +354,3 @@ Test-BaClient
 
 
 # Get-ExchangeExist
-
-
-
-
-
