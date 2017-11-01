@@ -132,9 +132,9 @@ Function Get-BaInstallPath {
         echo "Found the installations files under directory $BaInstPath"
         $Global:ISPContinue = $True
         if (-not (test-path -path "$DsmPath\$BaDsmFile")) {
-
-            echo "Does not found default $BaDsmFile file under directory $DsmPath"
-            $Global:ISPContinue = $False
+            $Global:ExitCode = "CRI0004E"
+            $Global:ExitErrorMsg = "Does not found default $BaDsmFile file under directory $DsmPath"
+            Exit-Error
         }
 
     }
@@ -185,7 +185,7 @@ Function Install-BaClient {
         cd $BaInstPath
         Start-Process -FilePath "msiexec.exe" -ArgumentList "$MSIArguments" -Wait
         cd ..
-    }
+        }
 }
 
 Function Register-Node {
@@ -222,9 +222,9 @@ Function Config-BAClient {
             "/password:$NodePassword"
             "/autostart:no"
             "/startnow:no"
-    )
+            )
 
-    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "Argument" -Wait
+    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument" -Wait
 
     echo "Creating $BaCad Service"
     $Argument = @(
@@ -237,11 +237,11 @@ Function Config-BAClient {
             "/validate:yes"
             "/autostart:yes"
             "/startnow:no"
-            '/CadSchadName:"$BaSched"'
-    )
+            '/CadSchadName:"$BaSched"
+            )
 
     echo "$Argument"
-    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "Argument" -Wait
+    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument" -Wait
 
     echo "Creating $BaRemote Service"
     $Argument = @(
@@ -255,17 +255,30 @@ Function Config-BAClient {
             "/autostart:no"
             "/startnow:no"
             '/partnername:"$BaCad"'
-    )
+            )
 
     echo "$Argument"
-    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "Argument" -Wait
+    Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument" -Wait
 
     ### Go Back to Installation Path
     cd /d $PSCommandPath
 }
 
+Function Test-BaClient {
+    $BaClientInstallPath = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion" -Name TSMClientPath).TSMClientPath
+    cd /d "$BaClientInstallPath\baclient"
 
+    $Argument = @(
+            "query"
+            "filesystem"
+            )
+    Start-Process -FilePath "dsmc.exe" -ArgumentList "$Argument" -Wait
 
+    $Argument = @(
+            "query"
+            "schedule"
+            )
+}
 
 
 ########################################## GENERIC FUNCTIONS ##########################################
@@ -300,9 +313,10 @@ Get-OSVersion
 Get-BaClientExist
 Get-BaInstallPath
 
-if ($ISPContinue -eq "$True") { Install-BaClient }
-if ($ISPContinue -eq "$True") { Register-Node }
-if ($ISPContinue -eq "$True") { Config-BaClient }
+Install-BaClient
+Register-Node
+Config-BaClient
+Test-BaClient
 
 ### Future Stuff ###
 #Get-ExchangeExist
