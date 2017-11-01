@@ -1,6 +1,7 @@
 ##################################################################################
 ##  Silent Installation Script for IBM Spectrum Protect Backup-Archive Client   ##
 ##  Made by Cristie Nordic AB                                                   ##
+##  Goes under
 ##################################################################################
 
 Function Get-InstallConfig {
@@ -10,9 +11,9 @@ Function Get-InstallConfig {
     echo ""
 
     ####### IBM Spectrum Protect Server Settings #######
-    $Global:TcpServerAddressDefault = "tsm2.cristie.se"
+    $Global:TcpServerAddressDefault = "tsm2.corp.com"
     $Global:TcpPortDefault = "1500"
-    $Global:NodePassword = "tsm123"
+    $Global:NodePassword = "PASSWORD"
 
     ####### Installations Files #######
     $Global:BaInstPath = ".\TSMClient"
@@ -94,6 +95,7 @@ Function Set-BaSetup {
     if (!$TcpPort) {
         $Global:TcpPort = $TcpPortDefault
         }
+    Get-NetIPAddress |fl IPAddress
     $NodeName = Read-Host "Please enter your hostname (Default: $NodeNameDefault)"
     if (!$NodeName) {
         $Global:NodeName = $NodeNameDefault

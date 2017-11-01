@@ -1,26 +1,21 @@
 # Client Install
-To get this working we need to do following steps
+To get this working we need to do following steps.
+Make sure you run in *Administrator Mode* when you start PowerShell.
+You must download the IBM Spectrum Protect Backup-Archive Client version 8.1.0.2 or newer and extract the data.
+The *TSMClient* directory most be in the same directory where you have the *install.ps1* script.
 
+It is recommended that you modify the *ba_dsm.opt* file to fit your environment, and this is a early version of the script many function do you probably need to disable in the code to be able to get it working.
 
-# Install ISP Client
-1. Find out what version of Operating System - SORT OF DONE
-2. Find Bit Version of Operating System - DONE
-3. Find Hostname - DONE
-4. Search for Installation Files - DONE
-5. Does the ISP Client already been installed or not - DONE
-6. Install / Upgrade the Client - WILL START WITH FRESH INSTALL FIRST
-7. Register Node and Assoc with Schedule - WILL ONLY SHOW THE COMMANDS
-7b. Register the client Schedules - WILL ONLY SHOW THE COMMANDS
-8. Copy modify dsm.opt file - NOT TESTED
-9. Modify dsm.opt - NOT DONE
-10. Create Services - NOT TESTED
-11. Run dsmc to verify we can access ISP Server
+If you want to change the default values please open the install.ps1 file and go to line 13-15 and modify the default values.
 
-6. Verify we got a Schedule
+# Install Backup-Archive Client
+Only the basic are working.
 
 # Install SQL Client
+Not working yet
 
 # Install Exchange Client
+Not working yet
 
 # Test Have been done on following setup
 Check   Operating Systems           Backup-Archive Client
@@ -29,5 +24,5 @@ Check   Operating Systems           Backup-Archive Client
 [ ]     Windows Server 2012 R2      BA Client 8.1.2.0
 [ ]     Windows Server 2016         BA Client 8.1.0.2
 [ ]     Windows Server 2016         BA Client 8.1.2.0
-
+[X]     Windows 10                  BA Client 8.1.0.2
 
