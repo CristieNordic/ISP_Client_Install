@@ -1,7 +1,7 @@
 ##################################################################################
 ##  Silent Installation Script for IBM Spectrum Protect Backup-Archive Client   ##
 ##  Made by Cristie Nordic AB                                                   ##
-##  Goes under
+##  Goes under MIT License Terms & Conditions
 ##################################################################################
 
 Function Get-InstallConfig {
@@ -95,13 +95,25 @@ Function Set-BaSetup {
     if (!$TcpPort) {
         $Global:TcpPort = $TcpPortDefault
         }
-    Get-NetIPAddress |fl IPAddress
-    $NodeName = Read-Host "Please enter your hostname (Default: $NodeNameDefault)"
+    $Global:NodeName = Read-Host "Please enter your hostname (Default: $NodeNameDefault)"
     if (!$NodeName) {
         $Global:NodeName = $NodeNameDefault
         }
+    Get-NetIPAddress |fl IPAddress
     $Global:TcpClientAddress = Read-Host "Please enter your Local IP Address"
     #$Password = Read-Host -assecurestring "Please enter your password"
+    echo "*****************************************************************"
+    echo "***************** Please run following commands *****************"
+    echo "*****************       or run the WebUI        *****************"
+    echo "*****************************************************************"
+    echo " "
+    echo "To register the node in IBM Spectrum Protect Server"
+    echo "TSM> Register node $NodeName $NodePassword domain=<DOMAIN NAME>"
+    pause
+    echo " "
+    echo "Please assign the node to a Scheduler before continue"
+    echo "TSM> define association <DOMAIN NAME> <SCHEDULE NAME> $NodeName "
+    pause
 }
 
 Function Get-BaClientExist {
@@ -203,20 +215,7 @@ Function Install-BaClient {
 Function Register-Node {
     echo " "
     echo " "
-    $msg = "Please view the information on your PowerShell screen"
-    Invoke-WmiMethod -Path Win32_Process -Name Create -ArgumentList "msg * $msg"
-    echo "*****************************************************************"
-    echo "***************** Please run following commands *****************"
-    echo "*****************       or run the WebUI        *****************"
-    echo "*****************************************************************"
-    echo " "
-    echo "To register the node in IBM Spectrum Protect Server"
-    echo "TSM> Register node $NodeName $NodePassword domain=<DOMAIN NAME>"
-    pause
-    echo " "
-    echo "Please assign the node to a Scheduler before continue"
-    echo "TSM> define association <DOMAIN NAME> <SCHEDULE NAME> $NodeName "
-    pause
+    # This will be fix in a letar version with direct access to the Rest Interface.
 }
 
 Function Config-BAClient {
@@ -269,7 +268,7 @@ Function Config-BAClient {
         "/startnow:no",
         "/partnername:""$BaCad"""
         )
-    get-content "$dsmopt"
+    
     echo "Creating $BaSched Service"
     Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument1" -Wait
 
@@ -278,9 +277,6 @@ Function Config-BAClient {
 
     echo "Creating $BaRemote Service"
     Start-Process -FilePath "dsmcutil.exe" -ArgumentList "$Argument3" -Wait
-
-    ### Go Back to Installation Path
-    Set-Location $PSCommandPath
 }
 
 Function Test-BaClient {
@@ -288,6 +284,15 @@ Function Test-BaClient {
     $baclientdir = "$BaClientInstallPath" + "baclient"
     Set-Location "$BaClientdir"
 
+    $Argument = @(
+            "set",
+            "password",
+            "$NodeName",
+            "$NodePassword"
+            "$NodePassword"
+            )
+    Start-Process -FilePath "dsmc.exe" -ArgumentList "$Argument" -Wait
+    
     $Argument = @(
             "query",
             "filesystem"

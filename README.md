@@ -22,10 +22,10 @@ Not working yet
 | ------------- |:-----------------------:| ----------------------:|
 | [X]           | Windows 10              | BA Client 8.1.0.2      |
 | [ ]           | Windows 10              | BA Client 8.1.2.0      |
-| [ ]           | Windows Server 2012 R2  | BA Client 8.1.0.2      |
+| [X]           | Windows Server 2012 R2  | BA Client 8.1.0.2      |
 | [ ]           | Windows Server 2012 R2  | BA Client 8.1.2.0      |
 | [ ]           | Windows Server 2016     | BA Client 8.1.0.2      |
-| [ ]           | Windows Server 2016     | BA Client 8.1.2.0      |
+| [X]           | Windows Server 2016     | BA Client 8.1.2.0      |
 
 
 # MIT License
