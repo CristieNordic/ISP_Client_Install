@@ -1,7 +1,8 @@
 ##################################################################################
 ##  Silent Installation Script for IBM Spectrum Protect Backup-Archive Client   ##
 ##  Made by Cristie Nordic AB                                                   ##
-##  Goes under MIT License Terms & Conditions
+##  Version 0.02                                                                ## 
+##  Goes under MIT License Terms & Conditions                                   ##
 ##################################################################################
 
 Function Get-InstallConfig {
