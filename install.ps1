@@ -227,6 +227,7 @@ Function Config-BAClient {
 
     Copy-Item $DsmPath\$BaDsmFile "$dsmopt"
     (Get-Content "$dsmopt").replace('NODENAME', "$NodeName") | Set-Content "$dsmopt"
+    (Get-Content "$dsmopt").replace('TCPPORTNO', "$TcpPort") | Set-Content "$dsmopt"
     (Get-Content "$dsmopt").replace('SERVERADDRESS', "$TcpServerAddress") | Set-Content "$dsmopt"
     (Get-Content "$dsmopt").replace('LOCALIPADDRESS', "$TcpClientAddress") | Set-Content "$dsmopt"
     (Get-Content "$dsmopt").replace('PATHTOERRORLOG', "$errorlogname") | Set-Content "$dsmopt"
