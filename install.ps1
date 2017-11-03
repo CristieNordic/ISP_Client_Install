@@ -1,7 +1,8 @@
 ##################################################################################
 ##  Silent Installation Script for IBM Spectrum Protect Backup-Archive Client   ##
 ##  Made by Cristie Nordic AB                                                   ##
-##  Goes under MIT License Terms & Conditions
+##  Version 0.02                                                                ## 
+##  Goes under MIT License Terms & Conditions                                   ##
 ##################################################################################
 
 Function Get-InstallConfig {
@@ -227,6 +228,7 @@ Function Config-BAClient {
 
     Copy-Item $DsmPath\$BaDsmFile "$dsmopt"
     (Get-Content "$dsmopt").replace('NODENAME', "$NodeName") | Set-Content "$dsmopt"
+    (Get-Content "$dsmopt").replace('TCPPORTNO', "$TcpPort") | Set-Content "$dsmopt"
     (Get-Content "$dsmopt").replace('SERVERADDRESS', "$TcpServerAddress") | Set-Content "$dsmopt"
     (Get-Content "$dsmopt").replace('LOCALIPADDRESS', "$TcpClientAddress") | Set-Content "$dsmopt"
     (Get-Content "$dsmopt").replace('PATHTOERRORLOG', "$errorlogname") | Set-Content "$dsmopt"
