@@ -1,7 +1,7 @@
 ##################################################################################
 ##  Silent Installation Script for IBM Spectrum Protect Backup-Archive Client   ##
 ##  Made by Cristie Nordic AB                                                   ##
-##  Version 0.02                                                                ## 
+##  Version 0.03                                                                ##
 ##  Goes under MIT License Terms & Conditions                                   ##
 ##################################################################################
 
@@ -12,7 +12,7 @@ Function Get-InstallConfig {
     echo ""
 
     ####### IBM Spectrum Protect Server Settings #######
-    $Global:TcpServerAddressDefault = "tsm2.corp.com"
+    $Global:TcpServerAddressDefault = "tsm.corp.com"
     $Global:TcpPortDefault = "1500"
     $Global:NodePassword = "PASSWORD"
 
@@ -290,20 +290,8 @@ Function Test-BaClient {
             "set",
             "password",
             "$NodeName",
+            "$NodePassword",
             "$NodePassword"
-            "$NodePassword"
-            )
-    Start-Process -FilePath "dsmc.exe" -ArgumentList "$Argument" -Wait
-    
-    $Argument = @(
-            "query",
-            "filesystem"
-            )
-    Start-Process -FilePath "dsmc.exe" -ArgumentList "$Argument" -Wait
-
-    $Argument = @(
-            "query",
-            "schedule"
             )
     Start-Process -FilePath "dsmc.exe" -ArgumentList "$Argument" -Wait
 }
