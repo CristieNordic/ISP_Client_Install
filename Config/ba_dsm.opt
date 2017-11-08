@@ -12,9 +12,9 @@ SSL Yes
 Managedservices Webclient Schedule
 
 ErrorLogRetention 14 D
-Errorlogname	PATHTOERRORLOG
+Errorlogname	"PATHTOERRORLOG"
 SchedLogRetention 14 D
-Schedlogname	PATHTOSCHEDLOG
+Schedlogname	"PATHTOSCHEDLOG"
 
 Domain All-Local
 
