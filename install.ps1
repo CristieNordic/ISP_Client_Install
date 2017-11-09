@@ -35,7 +35,7 @@ Function Get-InstallConfig {
     ####### Windows Services Names  #######
     $Global:BaCad = "TSM Client Acceptor"
     $Global:BaSched = "TSM Client Scheduler"
-    $Global:BaRemote = "TSM Client Remote Agent"
+    $Global:BaRemote = "TSM Remote Client Agent"
     #$Global:ExchCad = "TSM Exchange Acceptor"
     #$Global:ExchSched = "TSM Exchange Scheduler"
     #$Global:SqlCad = "TSM SQL Acceptor"
