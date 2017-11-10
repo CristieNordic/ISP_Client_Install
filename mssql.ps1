@@ -1,4 +1,10 @@
-########################################## MICROSOFT SQL SERVER ##########################################
+##################################################################################
+##  Silent Installation Script for IBM Spectrum Protect for Microsoft SQL       ##
+##  Made by Cristie Nordic AB                                                   ##
+##  Goes under MIT License Terms & Conditions                                   ##
+##################################################################################
+
+Param([parameter(Mandatory=$True)]$parameter)
 
 Function Get-MsSqlExist {
     $Global:MsSqlServer = $null
@@ -69,3 +75,21 @@ Grant Proxy target=NODENAME_SQL AGENT=NODENAME
 
 
 }
+
+
+if ($parameter -eq "Check") {
+    Get-BaClientExist
+    Get-BaInstallPath
+    }
+
+if ($parameter -eq "Install") {
+    Set-BaSetup
+    Install-BaClient
+    Register-Node
+    Config-BaClient
+    Test-BaClient
+    }
+
+if (!$parameter) {
+    Write-Output "Invalid Command."
+    Write-Output "Please run ""Get-Help .\ispinstall.ps1"" to get more information" }

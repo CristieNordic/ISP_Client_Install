@@ -2,42 +2,55 @@
     "Version" : "1.0",
     "InProduction" : "NO",
     "Timestamp" : "2017/10/31",
-    "IspServerSettings" : [
+    "CristieCube" : [
         {
-            "TcpServerAddress" : "isp.corp.com"
-            "TcpPort" : "1500"
-            "SSLEncryption" : "No"
-            "SSLPort" : "1543"
-        },
-        {
-            "OcAddress" : "oc.corp.com"
-            "OcHttpsPort" :  "11090"
+            "useCristieCube" : "No",
+            "cubeTcpAddress" : "cube.corp.com",
+            "cubeTcpPort" : "443",
+            "cubeApiKey" : "abcdefgh-1234-5678-abcd-efghijklmnop"
         }
     ],
-    "UserSettings" : [
+    "IspServerSettings" : [
         {
-            "username" : "UserName",
-            "password" : "Password",
+            "tcpServerAddress" : "isp.corp.com",
+            "tcpPort" : "1500",
+            "sslEncryption" : "No",
+            "sslPort" : "1543"
+        },
+        {
+            "ocAddress" : "oc.corp.com",
+            "ocHttpsPort" :  "11090"
+        }
+    ],
+    "NodeSettings" : [
+        {
+            "useOnlyHostname" : "Yes",
+            "nodeExtension" : "DOMAIN-",
+            "extensionBeforeAfter" : "Before"
+        },
+        {
+            "exchExtension" : "_EXC",
+            "sqlExtension" : "_SQL"
         }
     ],
     "ClientServices" : [
         {
-            "baCadServices" : "ISP Client Acceptor",
-            "baSchedServices" : "ISP Client Scheduler",
-            "baRemoteServices" : "ISP Client Remote Agent",
+            "baCadServices" : "TSM Client Acceptor",
+            "baSchedServices" : "TSM Client Scheduler",
+            "baRemoteServices" : "TSM Remote Client Agent"
         },
         {
-            "exchCadServices" : "ISP Exchange Acceptor",
-            "exchSchedServices" : "ISP Exchange Scheduler",
+            "exchCadServices" : "TSM Exchange Acceptor",
+            "exchSchedServices" : "TSM Exchange Scheduler"
         },
         {
-            "sqlCadServices" : "ISP MSSQL Acceptor",
-            "sqlSchedServices" : "ISP MSSQL Scheduler",
+            "sqlCadServices" : "TSM MSSQL Acceptor",
+            "sqlSchedServices" : "TSM MSSQL Scheduler"
         }
     ],
     "ConfigurationFiles" : [
         {
-            "optFilePath" : ".\config",
+            "optFilePath" : "Config",
             "baDsmOpt" : "ba_dsm.opt",
             "exchDsmOpt" : "exch_dsm.opt",
             "sqlDsmOpt" : "sql_dsm.opt"
@@ -57,6 +70,12 @@
             "version" : "8.1.2.0",
             "minimumOSLevel" : "Windows Server 2008 R2",
             "fileURL" : "ftp://ftp.software.ibm.com/storage/tivoli-storage-management/maintenance/client/v8r1/Windows/x64/v812/8.1.2.0-TIV-TSMBAC-WinX64.exe"
-        },
+        }
+    ],
+    "UserSettings" : [
+        {
+            "username" : "UserName",
+            "password" : "Password"
+        }
     ]
 }
