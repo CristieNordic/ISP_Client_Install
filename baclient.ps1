@@ -113,7 +113,7 @@ Function Get-BaInstallPath {
 }
 
 Function Install-BaClient {
-    if ($BaClientExist -eq $False) {
+    if ($InstallBaClient -eq $True) {
         Write-Output "Installing Microsoft Windows 64-Bit C++ Runtime"
         Write-Output "Please Wait ..."
         Write-Output ""

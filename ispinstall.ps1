@@ -181,8 +181,8 @@ if ($parameter -eq "Only-SQL") {
     }
 
 if ($InstallBaClient -eq $True) {
-    #& .\baclient.ps1 Install
-    Write-Output "Will now run install of TSM"
+    & .\baclient.ps1 Install
+    #Write-Output "Will now run install of TSM"
     }
 
 if ($InstallDpExchange -eq $True) {
