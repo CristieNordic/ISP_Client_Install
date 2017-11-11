@@ -1,7 +1,7 @@
 {
-    "Version" : "1.0",
+    "Version" : "0.4",
     "InProduction" : "NO",
-    "Timestamp" : "2017/10/31",
+    "Timestamp" : "2017/11/11",
     "CristieCube" : [
         {
             "useCristieCube" : "No",
