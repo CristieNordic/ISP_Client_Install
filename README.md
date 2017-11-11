@@ -9,7 +9,7 @@ It is recommended that you modify the *ba_dsm.opt* file to fit your environment,
 If you want to change the default values please open the install.ps1 file and go to line 13-15 and modify the default values.
 
 # Install Backup-Archive Client
-Only the basic are working.
+Only the basic are working at the moment. Please test the script and see if it is good enough for you.
 
 # Install SQL Client
 Not working yet
@@ -21,9 +21,9 @@ Not working yet
 | Checkbox      | Operating Systems       | Backup-Archive Client  |
 | ------------- |:-----------------------:| ----------------------:|
 | [X]           | Windows 10              | BA Client 8.1.0.2      |
-| [ ]           | Windows 10              | BA Client 8.1.2.0      |
+| [X]           | Windows 10              | BA Client 8.1.2.0      |
 | [X]           | Windows Server 2012 R2  | BA Client 8.1.0.2      |
-| [ ]           | Windows Server 2012 R2  | BA Client 8.1.2.0      |
+| [X]           | Windows Server 2012 R2  | BA Client 8.1.2.0      |
 | [ ]           | Windows Server 2016     | BA Client 8.1.0.2      |
 | [X]           | Windows Server 2016     | BA Client 8.1.2.0      |
 

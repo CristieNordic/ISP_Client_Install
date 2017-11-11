@@ -1,4 +1,10 @@
-########################################## MICROSOFT EXCHANGE ##########################################
+##################################################################################
+##  Silent Installation Script for IBM Spectrum Protect for Microsoft Exchange  ##
+##  Made by Cristie Nordic AB                                                   ##
+##  Goes under MIT License Terms & Conditions                                   ##
+##################################################################################
+
+Param([parameter(Mandatory=$True)]$parameter)
 
 Function Get-ExchangeExist {
     $Global:ExchServer = $null
@@ -22,3 +28,21 @@ Function Install-Dp4Exch {
 Function Config-Dp4Exch {
 
 }
+
+
+if ($parameter -eq "Check") {
+    Get-BaClientExist
+    Get-BaInstallPath
+    }
+
+if ($parameter -eq "Install") {
+    Set-BaSetup
+    Install-BaClient
+    Register-Node
+    Config-BaClient
+    Test-BaClient
+    }
+
+if (!$parameter) {
+    Write-Output "Invalid Command."
+    Write-Output "Please run ""Get-Help .\ispinstall.ps1"" to get more information" }
