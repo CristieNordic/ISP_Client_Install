@@ -2,7 +2,7 @@
 To get this working we need to do following steps.
 Make sure you run in **Administrator Mode** when you start PowerShell.
 You must download the IBM Spectrum Protect Backup-Archive Client version 8.1.0.2 or newer and extract the data.
-The **.\TSMClient** directory most be in the same directory where you have the **install.ps1** script.
+The **.\TSMClient** directory most be in the same directory where you have the **ispinstall.ps1** script.
 
 It is recommended that you modify the *ba_dsm.opt* file to fit your environment, and this is a early version of the script many function do you probably need to disable in the code to be able to get it working.
 
@@ -17,15 +17,15 @@ Not working yet
 # Install Exchange Client
 Not working yet
 
-# Test Have been done on following setup
-| Checkbox      | Operating Systems       | Backup-Archive Client  |
-| ------------- |:-----------------------:| ----------------------:|
-| [X]           | Windows 10              | BA Client 8.1.0.2      |
-| [X]           | Windows 10              | BA Client 8.1.2.0      |
-| [X]           | Windows Server 2012 R2  | BA Client 8.1.0.2      |
-| [X]           | Windows Server 2012 R2  | BA Client 8.1.2.0      |
-| [ ]           | Windows Server 2016     | BA Client 8.1.0.2      |
-| [X]           | Windows Server 2016     | BA Client 8.1.2.0      |
+# Requests
+If you find any bugs or want me to priorities any functionality please great a GitHub ticket.
+
+# Wanna help?
+If you want to help, please create a fork and commit when you are done.
+
+# OEM or Resale?
+You are allowed to include this part of your solution, but remember it's goes under the MIT license.
+That mean basically you are not allowed to invoice your customer for this script.
 
 
 # MIT License

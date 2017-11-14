@@ -7,9 +7,6 @@
 Param([parameter(Mandatory=$True)]$parameter)
 
 Function Get-BaClientExist {
-    Write-Output "Check if $ISP $BAC exist"
-    Write-Output ""
-
     $ISPClientExistVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient" -Name PtfLevel).PtfLevel
     if (test-path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient") {
         Write-Output " "

@@ -26,7 +26,9 @@
         {
             "useOnlyHostname" : "Yes",
             "nodeExtension" : "DOMAIN-",
-            "extensionBeforeAfter" : "Before"
+            "extensionBeforeAfter" : "Before",
+            "generatePassword" : "Yes",
+            "staticPassword" : "Passw0rdCl3rT3xt"
         },
         {
             "exchExtension" : "_EXC",
