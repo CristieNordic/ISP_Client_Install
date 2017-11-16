@@ -1,7 +1,7 @@
 {
-    "Version" : "0.4",
+    "Version" : "0.5",
     "InProduction" : "NO",
-    "Timestamp" : "2017/11/11",
+    "Timestamp" : "2017/11/16",
     "CristieCube" : [
         {
             "useCristieCube" : "No",
@@ -37,17 +37,17 @@
     ],
     "ClientServices" : [
         {
-            "baCadServices" : "TSM Client Acceptor",
-            "baSchedServices" : "TSM Client Scheduler",
-            "baRemoteServices" : "TSM Remote Client Agent"
+            "baCadService" : "TSM Client Acceptor",
+            "baSchedService" : "TSM Client Scheduler",
+            "baRemoteService" : "TSM Remote Client Agent"
         },
         {
-            "exchCadServices" : "TSM Exchange Acceptor",
-            "exchSchedServices" : "TSM Exchange Scheduler"
+            "exchCadService" : "TSM Exchange Acceptor",
+            "exchSchedService" : "TSM Exchange Scheduler"
         },
         {
-            "sqlCadServices" : "TSM MSSQL Acceptor",
-            "sqlSchedServices" : "TSM MSSQL Scheduler"
+            "sqlCadService" : "TSM MSSQL Acceptor",
+            "sqlSchedService" : "TSM MSSQL Scheduler"
         }
     ],
     "ConfigurationFiles" : [
@@ -74,10 +74,14 @@
             "fileURL" : "ftp://ftp.software.ibm.com/storage/tivoli-storage-management/maintenance/client/v8r1/Windows/x64/v812/8.1.2.0-TIV-TSMBAC-WinX64.exe"
         }
     ],
-    "UserSettings" : [
+    "ProductNames" : [
         {
-            "username" : "UserName",
-            "password" : "Password"
+            "ISP": "IBM Spectrum Protect",
+            "BAC": "Backup-Archive Client",
+            "DP": "Data Protection For",
+            "SQL": "Microsoft SQL Server",
+            "EXCH": "Microsoft Exchange Server",
+            "TBMR": "Cristie TBMR"
         }
     ]
 }

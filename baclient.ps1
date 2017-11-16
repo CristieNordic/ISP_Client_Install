@@ -1,9 +1,3 @@
-##################################################################################
-##  Silent Installation Script for IBM Spectrum Protect Backup-Archive Client   ##
-##  Made by Cristie Nordic AB                                                   ##
-##  Goes under MIT License Terms & Conditions                                   ##
-##################################################################################
-
 Param([parameter(Mandatory=$True)]$parameter)
 
 Function Get-BaClientExist {
@@ -21,15 +15,11 @@ Function Get-BaClientExist {
         }
 
     else {
-        Write-Output ""
-        Write-Output ""
-        Write-Output "$ISP $BAC will now be installed..."
         $Global:InstallBaClient = $True
         $Global:UpgradeBaClient = $False
         $Global:ExitCode = "0"
         }
 
-    Write-Output ""
     Write-Output ""
 }
 
@@ -98,7 +88,6 @@ Function Get-BaInstallPath {
     }
 
     else {
-        Write-Output "Found the $ISP $BAC Installations files under directory $BaInstPath"
         if (-not (test-path -path "$DsmPath\$BaDsmFile")) {
             $Global:ExitCode = "CRI0004E"
             $Global:ExitErrorMsg = "Does not found default $BaDsmFile file under directory $DsmPath"

@@ -84,32 +84,31 @@ Function Get-InstallConfig {
     #$Globel:SqlInstPath = ".\DPforSql"
     #$Globel:SqlInstFile = "DP for SQL.msi"
 
-    ####### DSM.OPT File Information #######
-    $Global:DsmPath = ".\config"
-    $Global:BaDsmFile = "ba_dsm.opt"
-    #$Global:SqlDsmFile = "sql_dsm.opt"
-    #$Global:ExchDsmFile = "exch_dsm.opt"
+    ###### Get Service Names from JSON ######
+    $ServiceName = (Get-JsonConfig ClientServices)
+    $Global:BaCad = $ServiceName[0].baCadService
+    $Global:BaSched = $ServiceName[0].baSchedService
+    $Global:BaRemote = $ServiceName[0].baRemoteService
+    $Global:ExchCad = $ServiceName[1].exchCadService
+    $Global:ExchSched = $ServiceName[1].exchSchedService
+    $Global:SqlCad = $ServiceName[2].sqlCadService
+    $Global:SqlSched = $ServiceName[2].sqlSchedService
 
-    ####### Windows Services Names  #######
-    $Global:BaCad = "TSM Client Acceptor"
-    $Global:BaSched = "TSM Client Scheduler"
-    $Global:BaRemote = "TSM Remote Client Agent"
-    #$Global:ExchCad = "TSM Exchange Acceptor"
-    #$Global:ExchSched = "TSM Exchange Scheduler"
-    #$Global:SqlCad = "TSM SQL Acceptor"
-    #$Global:SqlSched = "TSM SQL Scheduler"
-
-    ####### Downloads URLs  #######
-    $Global:BaClientDownloadUrl = "ftp://ftp.software.ibm.com/storage/tivoli-storage-management/maintenance/client/v8r1/Windows/x64/v812/8.1.2.0-TIV-TSMBAC-WinX64.exe"
-    $Global:Dp4ExchDownloadUrl = "ftp://ftp.cristie.se/dp4exch/latest"
-    $Global:Dp4SqlDownloadUrl = "ftp://ftp.cristie.se/dp4sql/latest"
+    ###### Get Configuration Files from JSON ######
+    $ConfigData = (Get-JsonConfig ConfigurationFiles)
+    $Global:DsmPath = $ConfigData.optFilePath
+    $Global:BaDsmFile = $ConfigData.baDsmOpt
+    $Global:SqlDsmFile = $ConfigData.sqlDsmOpt
+    $Global:ExchDsmFile = $ConfigData.exchDsmOpt
 
     ####### Product Names #######
-    $Global:ISP = "IBM Spectrum Protect"
-    $Global:BAC = "Backup-Archive Client"
-    $Global:DP = "Data Protection for"
-    $Global:EXCH = "Microsoft Exchange Server"
-    $Global:SQL = "Microsoft SQL Server"
+    $ProductNames = (Get-JsonConfig ProductNames)
+    $Global:ISP = $ProductNames.ISP
+    $Global:BAC = $ProductNames.BA
+    $Global:DP = $ProductNames.DP
+    $Global:EXCH = $ProductNames.EXCH
+    $Global:SQL = $ProductNames.SQL
+    $Global:TBMR = $ProductNames.TBMR
 }
 
 Function Get-OSInformation {
@@ -180,8 +179,20 @@ Function Show-Status  {
     Write-Output "ISP Address: $TcpServerAddressDefault"
     Write-Output "ISP Port: $TcpPortDefault"
     Write-Output "ISP Nodename: $NodeNameDefault"
-    Write-Output "ISP Password: $NodePassword"
+    # Write-Output "ISP Password: $NodePassword"
     Write-Output " "
+    #Write-Output "Installing:  "
+    #Write-Output " "
+    Write-Output "Backup-Archive Client Services:"
+    Write-Output "$BaCad $BaSched $BaRemote"
+    Write-Output " "
+    Write-Output "Data Protection for Exchange Services:"
+    Write-Output "$ExchCad $ExchSched"
+    Write-Output " "
+    Write-Output "Data Protection for SQL Services:"
+    Write-Output "$SqlCad $SqlSched"
+    Write-Output " "
+
     }
 
 Function CleanUp-Install  {
@@ -192,6 +203,23 @@ Function CleanUp-Install  {
     Remove-Variable TcpPort -EA 0
     Remove-Variable NodeNameDefault -EA 0
     Remove-Variable NodePassword -EA 0
+    Remove-Variable BaCad -EA 0
+    Remove-Variable BaSched -EA 0
+    Remove-Variable BaRemote -EA 0
+    Remove-Variable ExchCad -EA 0
+    Remove-Variable ExchSched -EA 0
+    Remove-Variable SqlCad -EA 0
+    Remove-Variable SqlSched -EA 0
+    Remove-Variable DsmPath -EA 0
+    Remove-Variable BaDsmFile -EA 0
+    Remove-Variable SqlDsmFile -EA 0
+    Remove-Variable ExchDsmFile -EA 0
+    Remove-Variable ISP -EA 0
+    Remove-Variable BAC -EA 0
+    Remove-Variable DP -EA 0
+    Remove-Variable EXCH -EA 0
+    Remove-Variable SQL -EA 0
+    Remove-Variable TBMR -EA 0
     }
 
 Function Get-NodePassword() {
@@ -268,20 +296,21 @@ Write-Output "******************* OpenSource Project by Cristie Nordic AB ******
 Write-Output "*******************************************************************************"
 Get-InstallConfig
 Get-OSInformation
+Set-IspSettings
+Set-NodeSettings
 
 if (!$parameter) {
-    Set-IspSettings
-    Set-NodeSettings
-    & .\baclient.ps1 check
-    Show-Status
-    # & .\exchange.ps1 check
-    # & .\mssql.ps1 check
+    $parameter = "Check"
  }
 
 if ($parameter -eq "Check") {
-    & .\baclient.ps1 check
+    & .\baclient.ps1 Check
+    Show-Status
     # & .\exchange.ps1 check
     # & .\mssql.ps1 check
+    # $InstallBaClient = $False
+    $InstallDpExchange = $False
+    $InstallDpSql = $False
     }
 
 if ($parameter -eq "Only-File") {
