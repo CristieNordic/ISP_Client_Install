@@ -1,15 +1,6 @@
-##################################################################################
-##  Silent Installation Script for IBM Spectrum Protect Backup-Archive Client   ##
-##  Made by Cristie Nordic AB                                                   ##
-##  Goes under MIT License Terms & Conditions                                   ##
-##################################################################################
-
 Param([parameter(Mandatory=$True)]$parameter)
 
 Function Get-BaClientExist {
-    Write-Output "Check if $ISP $BAC exist"
-    Write-Output ""
-
     $ISPClientExistVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient" -Name PtfLevel).PtfLevel
     if (test-path "HKLM:\SOFTWARE\IBM\ADSM\CurrentVersion\BackupClient") {
         Write-Output " "
@@ -24,15 +15,11 @@ Function Get-BaClientExist {
         }
 
     else {
-        Write-Output ""
-        Write-Output ""
-        Write-Output "$ISP $BAC will now be installed..."
         $Global:InstallBaClient = $True
         $Global:UpgradeBaClient = $False
         $Global:ExitCode = "0"
         }
 
-    Write-Output ""
     Write-Output ""
 }
 
@@ -101,7 +88,6 @@ Function Get-BaInstallPath {
     }
 
     else {
-        Write-Output "Found the $ISP $BAC Installations files under directory $BaInstPath"
         if (-not (test-path -path "$DsmPath\$BaDsmFile")) {
             $Global:ExitCode = "CRI0004E"
             $Global:ExitErrorMsg = "Does not found default $BaDsmFile file under directory $DsmPath"
@@ -113,7 +99,7 @@ Function Get-BaInstallPath {
 }
 
 Function Install-BaClient {
-    if ($BaClientExist -eq $False) {
+    if ($InstallBaClient -eq $True) {
         Write-Output "Installing Microsoft Windows 64-Bit C++ Runtime"
         Write-Output "Please Wait ..."
         Write-Output ""
