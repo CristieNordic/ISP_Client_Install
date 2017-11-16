@@ -17,8 +17,12 @@ Not working yet
 # Install Exchange Client
 Not working yet
 
+# Support
+Cristie Nordic does not take any responsibility or support for this script. 
+If you need help please feel free to create a ticket here at the GitHub forum.
+
 # Requests
-If you find any bugs or want me to priorities any functionality please great a GitHub ticket.
+If you find any bugs or want me to priorities any functionality please create a GitHub ticket.
 
 # Wanna help?
 If you want to help, please create a fork and commit when you are done.
@@ -26,7 +30,6 @@ If you want to help, please create a fork and commit when you are done.
 # OEM or Resale?
 You are allowed to include this part of your solution, but remember it's goes under the MIT license.
 That mean basically you are not allowed to invoice your customer for this script.
-
 
 # MIT License
 

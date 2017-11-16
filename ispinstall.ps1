@@ -300,12 +300,21 @@ Set-IspSettings
 Set-NodeSettings
 
 if (!$parameter) {
-    $parameter = "Check"
+    $parameter = "Auto"
  }
 
 if ($parameter -eq "Check") {
     & .\baclient.ps1 Check
     Show-Status
+    # & .\exchange.ps1 check
+    # & .\mssql.ps1 check
+    $InstallBaClient = $False
+    $InstallDpExchange = $False
+    $InstallDpSql = $False
+    }
+
+if ($parameter -eq "Auto") {
+    & .\baclient.ps1 Check
     # & .\exchange.ps1 check
     # & .\mssql.ps1 check
     # $InstallBaClient = $False
